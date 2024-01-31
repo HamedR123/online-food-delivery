@@ -4,62 +4,56 @@ import java.util.regex.Pattern;
 public class Main {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
+        loop:
         while (true) {
             System.out.println("Insert 1 for sign-up, 2 for login and 3 for exit");
             int menu = tryParse(scanner.nextLine());
-            if (menu == 1) {
-                System.out.println("sign-up");
-                System.out.println("Choose your username");
-                String username = scanner.nextLine();
-                if (User.getUserByUsername(username) == null) {
-                    System.out.println("Choose your password");
-                    String password = scanner.nextLine();
-                    if (isPasswordInvalid(password)) {
-                        System.out.println("Password should not contain white space");
-                        continue;
-                    }
-                    if (!isPasswordStrong(password)) {
-                        System.out.println("weak password");
-                        continue;
-                    }
-                    System.out.println("Insert 1 for customer account and 2 for manager account");
-                    int userMenu = tryParse(scanner.nextLine());
-                    if (userMenu == 1) {
-                        new Customer(username, password);
-                    } else {
-                        new Manager(username, password);
-                    }
-                    System.out.println("Account created");
-                } else {
-                    System.out.println("This username is already taken");
-                }
-            } else if (menu == 2) {
-                System.out.println("login");
-                System.out.println("Enter your username");
-                String username = scanner.nextLine();
-                User user = User.getUserByUsername(username);
-                if (user == null) {
-                    System.out.println("No such user");
-                } else {
-                    System.out.println("Enter your password");
-                    String password = scanner.nextLine();
-                    if (user.isPasswordCorrect(password)) {
-                        if (user instanceof Customer) {
-                            CustomerMenu customerMenu = new CustomerMenu(scanner, user);
-                            customerMenu.run();
-                        } else {
-                            ManagerMenu managerMenu = new ManagerMenu(scanner, user);
-                            managerMenu.run();
+            String username;
+            switch (menu) {
+                case 1:
+                    System.out.println("sign-up");
+                    System.out.println("Choose your username");
+                    username = scanner.nextLine();
+                    if (User.getUserByUsername(username) == null) {
+                        System.out.println("Choose your password");
+                        String password = scanner.nextLine();
+                        if (isPasswordInvalid(password)) {
+                            System.out.println("Password should not contain white space");
+                            continue;
                         }
+                        if (!isPasswordStrong(password)) {
+                            System.out.println("weak password");
+                            continue;
+                        }
+                        new User(username, password);
+                        System.out.println("Account created");
                     } else {
-                        System.out.println("Wrong password");
+                        System.out.println("This username is already taken");
                     }
-                }
-            } else if (menu == 3) {
-                System.out.println("exit");
-                break;
-            } else {
-                System.out.println("Invalid input");
+                    break;
+                case 2:
+                    System.out.println("login");
+                    System.out.println("Enter your username");
+                    username = scanner.nextLine();
+                    User user = User.getUserByUsername(username);
+                    if (user == null) {
+                        System.out.println("No such user");
+                    } else {
+                        System.out.println("Enter your password");
+                        String password = scanner.nextLine();
+                        if (user.isPasswordCorrect(password)) {
+                            MainMenu mainMenu = new MainMenu(scanner, user);
+                            mainMenu.run();
+                        } else {
+                            System.out.println("Wrong password");
+                        }
+                    }
+                    break;
+                case 3:
+                    System.out.println("exit");
+                    break loop;
+                default:
+                    System.out.println("Invalid input");
             }
         }
         scanner.close();

@@ -12,17 +12,17 @@ public class ProfileMenu {
 
     public void run() {
         Matcher matcher;
+        System.out.println("You are in Profile Menu");
         while (true) {
-            System.out.println("You are in Profile Menu");
             String command = scanner.nextLine().trim();
             if (command.equals("whoami")) {
                 System.out.println(user.getUsername());
+            } else if (command.equals("whereami")) {
+                System.out.println("Profile Menu");
             } else if ((matcher = Commands.CHANGE_USERNAME.getMatcher(command)).matches()) {
                 changeUsername(matcher);
             } else if ((matcher = Commands.CHANGE_PASSWORD.getMatcher(command)).matches()) {
                 changePassword(matcher);
-            } else if (Commands.GET_BALANCE.getMatcher(command).matches()) {
-                getBalance();
             } else if ((matcher = Commands.REMOVE_ACCOUNT.getMatcher(command)).matches()) {
                 if (removeAccount(matcher)) {
                     break;
@@ -57,11 +57,6 @@ public class ProfileMenu {
         } else {
             System.out.println("weak password");
         }
-    }
-
-    private void getBalance() {
-        int balance = user.getBalance();
-        System.out.printf("Your balance is: %d\n", balance);
     }
 
     private boolean removeAccount(Matcher matcher) {

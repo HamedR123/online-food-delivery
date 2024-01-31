@@ -1,16 +1,20 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
-public abstract class User {
-    private static ArrayList<User> usersList = new ArrayList<>();
+public class User {
+    private static final ArrayList<User> usersList = new ArrayList<>();
 
     private String username;
     private String password;
     private int balance;
+    private HashMap<Food, Integer> cart;
+    private Restaurant restaurant;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
         usersList.add(this);
+        cart = new HashMap<>();
     }
 
     public static User getUserByUsername(String username) {
@@ -56,5 +60,81 @@ public abstract class User {
             return true;
         }
         return false;
+    }
+
+    public void addToCart(Food food, int count) {
+        Integer initialCount = cart.get(food);
+        if (initialCount == null) {
+            cart.put(food, count);
+        } else {
+            cart.replace(food, initialCount + count);
+        }
+    }
+
+    public int removeFromCart(String foodName, String restaurantName, int count) {
+        Food food = null;
+        for (Food temp:
+                cart.keySet()) {
+            if (temp.getName().equals(foodName) && temp.getRestaurant().getName().equals(restaurantName)) {
+                food = temp;
+            }
+        }
+        if (food == null) {
+            return 1;
+        }
+        int initialCount = cart.get(food);
+        if (count > initialCount) {
+            return 2;
+        }
+        int finalCount = initialCount - count;
+        if (finalCount == 0) {
+            cart.remove(food);
+        } else {
+            cart.replace(food, finalCount);
+        }
+        return 0;
+    }
+
+    public HashMap<Food, Integer> getCart() {
+        return cart;
+    }
+
+    public boolean purchase() {
+        int total = 0;
+        for (Food food:
+                cart.keySet()) {
+            total += food.getPrice() * cart.get(food);
+        }
+        if (total > balance) {
+            return false;
+        }
+        for (Food food:
+                cart.keySet()) {
+            food.purchase(cart.get(food));
+        }
+        balance -= total;
+        cart = new HashMap<>();
+        return true;
+    }
+
+    public Restaurant getRestaurant() {
+        return restaurant;
+    }
+
+    public boolean setRestaurant(Restaurant restaurant) {
+        if (this.restaurant == null) {
+            this.restaurant = restaurant;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean closeRestaurant() {
+        if (restaurant == null) {
+            return false;
+        }
+        restaurant.removeRestaurant();
+        restaurant = null;
+        return true;
     }
 }
