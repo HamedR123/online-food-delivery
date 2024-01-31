@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class User {
+public abstract class User {
     private static ArrayList<User> usersList = new ArrayList<>();
 
     private String username;
@@ -50,7 +50,11 @@ public class User {
         return balance;
     }
 
-    public void removeAccount() {
-        usersList.remove(this);
+    public boolean removeAccount(String password) {
+        if (password.equals(this.password)) {
+            usersList.remove(this);
+            return true;
+        }
+        return false;
     }
 }
